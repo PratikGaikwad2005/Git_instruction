@@ -1,0 +1,90 @@
+<!-- === FRONTEND (HTML + CSS + JS) === -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Git Command Visualizer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f9f9f9;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    input {
+      width: 80%;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .output {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      background-color: #fff;
+    }
+    .output img {
+      max-width: 100%;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Git Command Visualizer</h1>
+    <input type="text" id="command" placeholder="Type a Git command...">
+    <button onclick="executeCommand()">Visualize</button>
+    <div id="output" class="output">
+      <p id="text-visualization"></p>
+      <img id="image-visualization" src="" alt="" ">
+    </div>
+  </div>
+
+  <script>
+    async function executeCommand() {
+      const command = document.getElementById('command').value;
+      const textOutput = document.getElementById('text-visualization');
+      const imageOutput = document.getElementById('image-visualization');
+      textOutput.textContent = 'Processing...';
+      imageOutput.style.display = 'none';
+
+      try {
+        const response = await fetch('http://localhost:5000/execute', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ command }),
+        });
+
+        const data = await response.json();
+        textOutput.textContent = data.visualization;
+        if (data.imageUrl) {
+          imageOutput.src = data.imageUrl;
+          imageOutput.style.display = 'block';
+        } else {
+          imageOutput.style.display = 'none';
+        }
+      } catch (error) {
+        textOutput.textContent = 'Error: ' + error.message;
+        imageOutput.style.display = 'none';
+      }
+    }
+  </script>
+</body>
+</html>
